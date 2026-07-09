@@ -1,0 +1,10 @@
+undetected-chromedriver
+selenium
+pyautogui
+setuptools
+openai
+google-generativeai
+flask
+flask-cors
+python-docx
+fpdf

@@ -5,7 +5,7 @@ A bot that automates applying to jobs on LinkedIn — searches for relevant jobs
 ## Install
 
 ```
-pip install undetected-chromedriver pyautogui setuptools openai flask-cors flask
+pip install -r requirements.txt
 ```
 
 Requires Python 3.10+ and Google Chrome installed.
