@@ -3,6 +3,11 @@ from flask_cors import CORS
 import csv
 from datetime import datetime
 import os
+import logging
+
+from modules import state
+
+logging.getLogger('werkzeug').setLevel(logging.WARNING)  # silence per-request access logs (e.g. GET /status spam)
 
 app = Flask(__name__)
 CORS(app)
@@ -90,6 +95,24 @@ def update_applied_date(job_id):
     except Exception as e:
         print(f"Error updating applied date: {str(e)}")  # Debug log
         return jsonify({"error": str(e)}), 500
+
+@app.route('/status', methods=['GET'])
+def get_status():
+    '''
+    Returns the live activity feed and any pending "needs your input" decisions.
+    '''
+    return jsonify(state.snapshot())
+
+@app.route('/decision/<int:decision_id>', methods=['POST'])
+def post_decision(decision_id):
+    '''
+    Resolves a pending decision (e.g. stuck question, manual login) with the user's choice.
+    '''
+    data = request.get_json(silent=True) or {}
+    choice = data.get('choice')
+    if not state.resolve_decision(decision_id, choice):
+        return jsonify({"error": f"No pending decision with id {decision_id}"}), 404
+    return jsonify({"message": "Resolved"}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

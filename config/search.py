@@ -64,7 +64,7 @@ security_clearance = False         # True or False, Note: True or False are case
 did_masters = False                # B.Tech CSE, NIT Jamshedpur
 
 # Avoid applying to jobs if their required experience is above your current_experience. (Set value as -1 if you want to apply to all ignoring their required experience...)
-current_experience = 1             # ~1 year (internship + Software Engineer at InfoEdge)
+current_experience = -1             # -1: apply to all jobs regardless of required experience
 ##
 
 

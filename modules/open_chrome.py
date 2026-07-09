@@ -1,5 +1,6 @@
 
 
+import os
 from modules.helpers import get_default_temp_profile, make_directories
 from config.settings import run_in_background, stealth_mode, disable_extensions, safe_mode, file_name, failed_file_name, logs_folder_path, generated_resume_path
 from config.questions import default_resume_path
@@ -12,7 +13,22 @@ else:
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from modules.helpers import find_default_profile_directory, critical_error_log, print_lg
+from modules import state
 from selenium.common.exceptions import SessionNotCreatedException
+
+def clear_stale_profile_locks(profile_dir: str) -> None:
+    '''
+    Removes leftover Chrome profile lock files (left behind after an unclean shutdown)
+    that otherwise cause "user data directory is already in use" errors on launch,
+    even when no Chrome process is actually running anymore.
+    '''
+    for lock_file in ("SingletonLock", "SingletonCookie", "SingletonSocket"):
+        path = os.path.join(profile_dir, lock_file)
+        try:
+            if os.path.exists(path) or os.path.islink(path):
+                os.remove(path)
+        except OSError as e:
+            print_lg(f'Could not remove stale lock file "{path}"', e)
 
 def createChromeSession(isRetry: bool = False):
     make_directories([file_name,failed_file_name,logs_folder_path+"/screenshots",default_resume_path,generated_resume_path+"/temp"])
@@ -26,6 +42,7 @@ def createChromeSession(isRetry: bool = False):
     if isRetry:
         print_lg("Will login with a guest profile, browsing history will not be saved in the browser!")
     elif profile_dir and not safe_mode:
+        clear_stale_profile_locks(profile_dir)
         options.add_argument(f"--user-data-dir={profile_dir}")
     else:
         print_lg("Logging in with a guest profile, Web history will not be saved!")
@@ -36,7 +53,7 @@ def createChromeSession(isRetry: bool = False):
         # except (FileNotFoundError, PermissionError) as e: 
         #     print_lg("(Undetected Mode) Got '{}' when using pre-installed ChromeDriver.".format(type(e).__name__)) 
             print_lg("Downloading Chrome Driver... This may take some time. Undetected mode requires download every run!")
-            driver = uc.Chrome(options=options, version_main=144)
+            driver = uc.Chrome(options=options)
     else: driver = webdriver.Chrome(options=options) #, service=Service(executable_path="C:\\Program Files\\Google\\Chrome\\chromedriver-win64\\chromedriver.exe"))
     driver.maximize_window()
     wait = WebDriverWait(driver, 5)
@@ -54,8 +71,7 @@ except Exception as e:
     if isinstance(e,TimeoutError): msg = "Couldn't download Chrome-driver. Set stealth_mode = False in config!"
     print_lg(msg)
     critical_error_log("In Opening Chrome", e)
-    from pyautogui import alert
-    alert(msg, "Error in opening chrome")
+    state.log_event("error", msg)
     try: driver.quit()
     except NameError: exit()
     

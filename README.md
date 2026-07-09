@@ -25,15 +25,9 @@ Place your resume at the path set in `default_resume_path` (in `config/questions
 ## Run
 
 ```
-python runAiBot.py
+python server.py
 ```
-
-To view applied-jobs history in a browser:
-
-```
-python app.py
-```
-then open `http://localhost:5000`.
+This starts the live dashboard and runs the bot. Open `http://localhost:5000` to watch job applications live and respond to any "needs your input" prompts.
 
 ## Disclaimer
 

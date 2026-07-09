@@ -9,8 +9,8 @@ from config.search import security_clearance, did_masters
 
 from modules.helpers import print_lg, critical_error_log, convert_to_json
 from modules.ai.prompts import *
+from modules import state
 
-from pyautogui import confirm
 from openai import OpenAI
 from openai.types.model import Model
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
@@ -31,12 +31,10 @@ ERROR:
 # Function to show an AI error alert
 def ai_error_alert(message: str, stackTrace: str, title: str = "AI Connection Error") -> None:
     """
-    Function to show an AI error alert and log it.
+    Function to log an AI error to the live dashboard feed (non-blocking).
     """
-    global showAiErrorAlerts
     if showAiErrorAlerts:
-        if "Pause AI error alerts" == confirm(f"{message}{stackTrace}\n", title, ["Pause AI error alerts", "Okay Continue"]):
-            showAiErrorAlerts = False
+        state.log_event("error", f"{title}: {message}{stackTrace}")
     critical_error_log(message, stackTrace)
 
 

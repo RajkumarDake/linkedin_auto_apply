@@ -84,7 +84,6 @@ def validate_questions() -> None | ValueError | TypeError:
     check_string(recent_employer, "recent_employer")
     check_string(confidence_level, "confidence_level")
 
-    check_boolean(pause_before_submit, "pause_before_submit")
     check_boolean(pause_at_failed_question, "pause_at_failed_question")
     check_boolean(overwrite_previous_answers, "overwrite_previous_answers")
 

@@ -11,10 +11,10 @@ import pathlib
 from time import sleep
 from random import randint
 from datetime import datetime, timedelta
-from pyautogui import alert
 from pprint import pprint
 
 from config.settings import logs_folder_path
+from modules import state
 
 
 
@@ -127,7 +127,7 @@ def print_lg(*msgs: str | dict, end: str = "\n", pretty: bool = False, flush: bo
                 file.write(str(message) + end)
     except Exception as e:
         trail = f'Skipped saving this message: "{message}" to log.txt!' if from_critical else "We'll try one more time to log..."
-        alert(f"log.txt in {logs_folder_path} is open or is occupied by another program! Please close it! {trail}", "Failed Logging")
+        state.log_event("error", f"log.txt in {logs_folder_path} is open or is occupied by another program! Please close it! {trail}")
         if not from_critical:
             critical_error_log("Log.txt is open or is occupied by another program!", e)
 #>
@@ -154,19 +154,20 @@ def buffer(speed: int=0) -> None:
 
 def manual_login_retry(is_logged_in: callable, limit: int = 2) -> None:
     '''
-    Function to ask and validate manual login
+    Function to ask (via the web dashboard) and validate manual login
     '''
     count = 0
     while not is_logged_in():
-        from pyautogui import alert
         print_lg("Seems like you're not logged in!")
-        button = "Confirm Login"
-        message = 'After you successfully Log In, please click "{}" button below.'.format(button)
         if count > limit:
             button = "Skip Confirmation"
-            message = 'If you\'re seeing this message even after you logged in, Click "{}". Seems like auto login confirmation failed!'.format(button)
+            message = 'If you\'re seeing this even after you logged in, click "{}". Seems like auto login confirmation failed!'.format(button)
+        else:
+            button = "Confirm Login"
+            message = 'Please log in to LinkedIn manually in the browser, then click "{}" below.'.format(button)
         count += 1
-        if alert(message, "Login Required", button) and count > limit: return
+        choice = state.request_decision("login_required", message, [button])
+        if choice == "Skip Confirmation": return
 
 
 

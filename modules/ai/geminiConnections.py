@@ -3,7 +3,7 @@ from config.secrets import llm_model, llm_api_key
 from config.settings import showAiErrorAlerts
 from modules.helpers import print_lg, critical_error_log, convert_to_json
 from modules.ai.prompts import *
-from pyautogui import confirm
+from modules import state
 from typing import Literal
 
 def gemini_get_models_list():
@@ -51,8 +51,7 @@ def gemini_create_client():
         error_message = f"Error occurred while configuring Gemini client. Make sure your API key and model name are correct."
         critical_error_log(error_message, e)
         if showAiErrorAlerts:
-            if "Pause AI error alerts" == confirm(f"{error_message}\n{str(e)}", "Gemini Connection Error", ["Pause AI error alerts", "Okay Continue"]):
-                showAiErrorAlerts = False
+            state.log_event("error", f"Gemini Connection Error: {error_message}\n{str(e)}")
         return None
 
 def gemini_completion(model, prompt: str, is_json: bool = False) -> dict | str:
