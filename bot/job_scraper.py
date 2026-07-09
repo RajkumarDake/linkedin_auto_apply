@@ -180,7 +180,7 @@ def get_job_main_details(job: WebElement, blacklisted_companies: set, rejected_j
             skip = True
             print_lg(f'Already applied to "{title} | {company}" job. Job ID: {job_id}!')
             state.log_event("skipped", f'"{title} | {company}" (already applied)', job_id=job_id)
-    except: pass
+    except Exception: pass
     try:
         if not skip: job_details_button.click()
     except Exception as e:

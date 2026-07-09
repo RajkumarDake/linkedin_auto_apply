@@ -49,7 +49,7 @@ def upload_resume(modal: WebElement, resume: str) -> tuple[bool, str]:
     try:
         modal.find_element(By.NAME, "file").send_keys(os.path.abspath(resume))
         return True, os.path.basename(default_resume_path)
-    except: return False, "Previous resume"
+    except Exception: return False, "Previous resume"
 
 
 # Function to answer common questions for Easy Apply
@@ -72,7 +72,7 @@ def answer_questions(modal: WebElement, questions_list: list, work_location: str
             try:
                 label = Question.find_element(By.TAG_NAME, "label")
                 label_org = label.find_element(By.TAG_NAME, "span").text
-            except: pass
+            except Exception: pass
             answer = 'Yes'
             label = label_org.lower()
             select = Select(select)
@@ -147,7 +147,7 @@ def answer_questions(modal: WebElement, questions_list: list, work_location: str
             prev_answer = None
             label = try_xp(radio, './/span[@data-test-form-builder-radio-button-form-component__title]', False)
             try: label = find_by_class(label, "visually-hidden", 2.0)
-            except: pass
+            except Exception: pass
             label_org = label.text if label else "Unknown"
             answer = 'Yes'
             label = label_org.lower()
@@ -196,7 +196,7 @@ def answer_questions(modal: WebElement, questions_list: list, work_location: str
             do_actions = False
             label = try_xp(Question, ".//label[@for]", False)
             try: label = label.find_element(By.CLASS_NAME,'visually-hidden')
-            except: pass
+            except Exception: pass
             label_org = label.text if label else "Unknown"
             answer = "" # years_of_experience
             label = label_org.lower()

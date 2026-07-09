@@ -119,16 +119,16 @@ def try_xp(driver: WebDriver, xpath: str, click: bool=True) -> WebElement | bool
             return True
         else:
             return driver.find_element(By.XPATH, xpath)
-    except: return False
+    except Exception: return False
 
 def try_linkText(driver: WebDriver, linkText: str) -> WebElement | bool:
     try:    return driver.find_element(By.LINK_TEXT, linkText)
-    except:  return False
+    except Exception:  return False
 
 def try_find_by_classes(driver: WebDriver, classes: list[str]) -> WebElement | ValueError:
     for cla in classes:
         try:    return driver.find_element(By.CLASS_NAME, cla)
-        except: pass
+        except Exception: pass
     raise ValueError("Failed to find an element with given classes")
 
 def company_search_click(driver: WebDriver, actions: ActionChains, companyName: str) -> None:
