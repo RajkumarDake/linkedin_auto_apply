@@ -33,22 +33,49 @@ def _screenshot_login_failure() -> str:
     return path
 
 
-def _fill_login_field(locators: list[tuple], value: str, field_name: str, time_each: float = 2.0) -> bool:
+def _first_visible(elements: list) -> object | bool:
+    '''
+    Returns the first element in `elements` that is actually displayed and enabled, or
+    `False` if none are. LinkedIn's login page renders duplicate desktop/mobile variants
+    of the same form simultaneously - `find_element` (singular) always returns the FIRST
+    DOM match, which can be the permanently-hidden copy, so a naive wait would time out
+    forever even though a usable, visible copy exists later in the DOM.
+    '''
+    for el in elements:
+        try:
+            if el.is_displayed() and el.is_enabled():
+                return el
+        except Exception:
+            continue
+    return False
+
+
+def _find_visible(by, selector: str, time: float = 3.0) -> object | bool:
+    '''
+    Waits up to `time` seconds for at least one visible+enabled element matching
+    `(by, selector)` to appear, and returns it. Returns `False` on timeout.
+    '''
+    try:
+        return WebDriverWait(driver, time).until(lambda d: _first_visible(d.find_elements(by, selector)))
+    except Exception:
+        return False
+
+
+def _fill_login_field(locators: list[tuple], value: str, field_name: str, time_each: float = 3.0) -> bool:
     '''
     Tries each `(By.X, "selector")` in `locators` in turn, waiting up to `time_each` seconds
-    for it to be clickable, and fills the first one found with `value`.
+    for a visible copy to appear, and fills the first one found with `value`.
     * Returns `True` if a field was found and filled, `False` if all locators failed.
     * Multiple fallback locators guard against LinkedIn renaming the field `id` (which is
-      exactly what broke the previous single By.ID("username")/By.ID("password") lookup).
+      exactly what broke the previous single By.ID("username")/By.ID("password") lookup -
+      current LinkedIn uses React's auto-generated, non-deterministic `id="«r0»"` style ids).
     '''
     for by, selector in locators:
-        try:
-            field = WebDriverWait(driver, time_each).until(EC.element_to_be_clickable((by, selector)))
+        field = _find_visible(by, selector, time_each)
+        if field:
             field.send_keys(Keys.CONTROL + "a")
             field.send_keys(value)
             return True
-        except Exception:
-            continue
     print_lg(f"Couldn't find {field_name} field with any known locator.")
     return False
 
@@ -84,19 +111,25 @@ def login_LN() -> None:
     try:
         wait.until(EC.presence_of_element_located((By.LINK_TEXT, "Forgot password?")))
         _fill_login_field([
+            (By.XPATH, "//input[contains(@autocomplete,'username') and @type='email']"),
             (By.ID, "username"),
-            (By.XPATH, "//input[@autocomplete='username']"),
             (By.XPATH, "//label[contains(normalize-space(),'Email') or contains(normalize-space(),'Phone')]/following::input[1]"),
             (By.XPATH, "//input[@type='text' or @type='email']"),
         ], username, "username")
         _fill_login_field([
+            (By.XPATH, "//input[contains(@autocomplete,'current-password') and @type='password']"),
             (By.ID, "password"),
-            (By.XPATH, "//input[@autocomplete='current-password']"),
             (By.XPATH, "//label[contains(normalize-space(),'Password')]/following::input[1]"),
             (By.XPATH, "//input[@type='password']"),
         ], password, "password")
-        # Find the login submit button and click it
-        driver.find_element(By.XPATH, '//button[@type="submit" and contains(text(), "Sign in")]').click()
+        # Find the login submit button and click it (LinkedIn's "Sign in" button is a plain
+        # <button type="button"> with the label in a nested <span>, not a <button type="submit">
+        # with direct text - contains(text(),...) would never match it)
+        submit_button = _find_visible(By.XPATH, "//button[.//span[normalize-space(text())='Sign in']]", 3.0)
+        if submit_button:
+            submit_button.click()
+        else:
+            raise Exception("Couldn't find Sign in button")
     except Exception as e1:
         try:
             profile_button = find_by_class(driver, "profile__details")
