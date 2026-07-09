@@ -4,6 +4,7 @@ LinkedIn login: checking login state and performing (auto or manual) login.
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from datetime import datetime
 
@@ -30,6 +31,26 @@ def _screenshot_login_failure() -> str:
     except Exception as e:
         print_lg("Failed to save login-failure screenshot.", e)
     return path
+
+
+def _fill_login_field(locators: list[tuple], value: str, field_name: str, time_each: float = 2.0) -> bool:
+    '''
+    Tries each `(By.X, "selector")` in `locators` in turn, waiting up to `time_each` seconds
+    for it to be clickable, and fills the first one found with `value`.
+    * Returns `True` if a field was found and filled, `False` if all locators failed.
+    * Multiple fallback locators guard against LinkedIn renaming the field `id` (which is
+      exactly what broke the previous single By.ID("username")/By.ID("password") lookup).
+    '''
+    for by, selector in locators:
+        try:
+            field = WebDriverWait(driver, time_each).until(EC.element_to_be_clickable((by, selector)))
+            field.send_keys(Keys.CONTROL + "a")
+            field.send_keys(value)
+            return True
+        except Exception:
+            continue
+    print_lg(f"Couldn't find {field_name} field with any known locator.")
+    return False
 
 
 def is_logged_in_LN() -> bool:
@@ -62,16 +83,18 @@ def login_LN() -> None:
         return
     try:
         wait.until(EC.presence_of_element_located((By.LINK_TEXT, "Forgot password?")))
-        try:
-            text_input_by_ID(driver, "username", username, 5)
-        except Exception as e:
-            print_lg("Couldn't find username field.")
-            # print_lg(e)
-        try:
-            text_input_by_ID(driver, "password", password, 5)
-        except Exception as e:
-            print_lg("Couldn't find password field.")
-            # print_lg(e)
+        _fill_login_field([
+            (By.ID, "username"),
+            (By.XPATH, "//input[@autocomplete='username']"),
+            (By.XPATH, "//label[contains(normalize-space(),'Email') or contains(normalize-space(),'Phone')]/following::input[1]"),
+            (By.XPATH, "//input[@type='text' or @type='email']"),
+        ], username, "username")
+        _fill_login_field([
+            (By.ID, "password"),
+            (By.XPATH, "//input[@autocomplete='current-password']"),
+            (By.XPATH, "//label[contains(normalize-space(),'Password')]/following::input[1]"),
+            (By.XPATH, "//input[@type='password']"),
+        ], password, "password")
         # Find the login submit button and click it
         driver.find_element(By.XPATH, '//button[@type="submit" and contains(text(), "Sign in")]').click()
     except Exception as e1:

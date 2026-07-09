@@ -104,8 +104,11 @@ def text_input_by_ID(driver: WebDriver, id: str, value: str, time: float=5.0) ->
     '''
     Enters `value` into the input field with the given `id` if found, else throws NotFoundException.
     - `time` is the max time to wait for the element to be found.
+    - Waits for it to be clickable (present, visible, and enabled), not just present in the DOM -
+      a merely-present field can still throw ElementNotInteractableException on send_keys if it
+      hasn't finished rendering/hydrating yet.
     '''
-    username_field = WebDriverWait(driver, time).until(EC.presence_of_element_located((By.ID, id)))
+    username_field = WebDriverWait(driver, time).until(EC.element_to_be_clickable((By.ID, id)))
     username_field.send_keys(Keys.CONTROL + "a")
     username_field.send_keys(value)
 
