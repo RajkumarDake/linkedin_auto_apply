@@ -192,14 +192,11 @@ def ai_extract_skills(client: OpenAI, job_description: str, stream: bool = strea
         prompt = extract_skills_prompt.format(job_description)
 
         messages = [{"role": "user", "content": prompt}]
-        ##> ------ Dheeraj Deshwal : dheeraj20194@iiitd.ac.in/dheerajdeshwal9811@gmail.com - Bug fix ------
         return ai_completion(client, messages, response_format=extract_skills_response_format, stream=stream)
-    ##<
     except Exception as e:
         ai_error_alert(f"Error occurred while extracting skills from job description. {apiCheckInstructions}", e)
 
 
-##> ------ Dheeraj Deshwal : dheeraj9811 Email:dheeraj20194@iiitd.ac.in/dheerajdeshwal9811@gmail.com - Feature ------
 def ai_answer_question(
     client: OpenAI, 
     question: str, options: list[str] | None = None, question_type: Literal['text', 'textarea', 'single_select', 'multiple_select'] = 'text', 
@@ -239,7 +236,6 @@ def ai_answer_question(
         return response
     except Exception as e:
         ai_error_alert(f"Error occurred while answering question. {apiCheckInstructions}", e)
-##<
 
 
 def ai_gen_experience(

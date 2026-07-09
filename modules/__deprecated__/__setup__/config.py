@@ -110,7 +110,7 @@ us_citizenship = "U.S. Citizen/Permanent Resident"
 
 
 # What is the link to your portfolio website, leave it empty as "", if you want to leave this question unanswered
-website = "https://github.com/GodsScion"                       # "www.example.bio" or "" and so on....
+website = ""                       # "www.example.bio" or "" and so on....
 
 # What to enter in your desired salary question, only enter in numbers inside quotes as some companies only allow numbers
 desired_salary = "120000"          # "80000", "90000", "100000" or "120000" and so on....
@@ -256,19 +256,4 @@ generated_resume_path = "all resumes/"
 
 
 
-############################################################################################################
-'''
-THANK YOU for using my tool 😊! Wishing you the best in your job hunt 🙌🏻!
-
-Sharing is caring! If you found this tool helpful, please share it with your peers 🥺. Your support keeps this project alive.
-
-Support my work on <PATREON_LINK>. Together, we can help more job seekers.
-
-As an independent developer, I pour my heart and soul into creating tools like this, driven by the genuine desire to make a positive impact.
-
-Your support, whether through donations big or small or simply spreading the word, means the world to me and helps keep this project alive and thriving.
-
-Gratefully yours 🙏🏻,
-Sai Vignesh Golla
-'''
 ############################################################################################################

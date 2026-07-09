@@ -80,9 +80,7 @@ notice_period_weeks = str(notice_period//7)
 notice_period = str(notice_period)
 
 aiClient = None
-##> ------ Dheeraj Deshwal : dheeraj9811 Email:dheeraj20194@iiitd.ac.in/dheerajdeshwal9811@gmail.com - Feature ------
 about_company_for_ai = None # TODO extract about company for AI
-##<
 
 #>
 
@@ -371,9 +369,7 @@ def get_job_description(
     - `skipMessage: str | None`
     '''
     try:
-        ##> ------ Dheeraj Deshwal : dheeraj9811 Email:dheeraj20194@iiitd.ac.in/dheerajdeshwal9811@gmail.com - Feature ------
         jobDescription = "Unknown"
-        ##<
         experience_required = "Unknown"
         found_masters = 0
         jobDescription = find_by_class(driver, "jobs-box__html-content").text
@@ -454,8 +450,7 @@ def answer_questions(modal: WebElement, questions_list: set, work_location: str,
                 options = "".join([f' "{option}",' for option in optionsText])
             prev_answer = selected_option
             if overwrite_previous_answers or selected_option == "Select an option":
-                ##> ------ WINDY_WINDWARD Email:karthik.sarode23@gmail.com - Added fuzzy logic to answer location based questions ------
-                if 'email' in label or 'phone' in label: 
+                if 'email' in label or 'phone' in label:
                     answer = prev_answer
                 elif 'gender' in label or 'sex' in label: 
                     answer = gender
@@ -494,7 +489,6 @@ def answer_questions(modal: WebElement, questions_list: set, work_location: str,
                         possible_answer_phrases.append(answer.upper())
                         # Try without special characters
                         possible_answer_phrases.append(''.join(c for c in answer if c.isalnum()))
-                    ##<
                     foundOption = False
                     for phrase in possible_answer_phrases:
                         for option in optionsText:
@@ -622,12 +616,11 @@ def answer_questions(modal: WebElement, questions_list: set, work_location: str,
                 elif 'website' in label or 'blog' in label or 'portfolio' in label or 'link' in label: answer = website
                 elif 'scale of 1-10' in label: answer = confidence_level
                 elif 'headline' in label: answer = linkedin_headline
-                elif ('hear' in label or 'come across' in label) and 'this' in label and ('job' in label or 'position' in label): answer = "https://github.com/GodsScion/Auto_job_applier_linkedIn"
+                elif ('hear' in label or 'come across' in label) and 'this' in label and ('job' in label or 'position' in label): answer = ""
                 elif 'state' in label or 'province' in label: answer = state
                 elif 'zip' in label or 'postal' in label or 'code' in label: answer = zipcode
                 elif 'country' in label: answer = country
                 else: answer = answer_common_questions(label,answer)
-                ##> ------ Yang Li : MARKYangL - Feature ------
                 if answer == "":
                     if use_AI and aiClient:
                         try:
@@ -652,7 +645,6 @@ def answer_questions(modal: WebElement, questions_list: set, work_location: str,
                     else:
                         randomly_answered_questions.add((label_org, "text"))
                         answer = years_of_experience
-                ##<
                 text.clear()
                 text.send_keys(answer)
                 if do_actions:
@@ -674,7 +666,6 @@ def answer_questions(modal: WebElement, questions_list: set, work_location: str,
                 if 'summary' in label: answer = linkedin_summary
                 elif 'cover' in label: answer = cover_letter
                 if answer == "":
-                ##> ------ Yang Li : MARKYangL - Feature ------
                     if use_AI and aiClient:
                         try:
                             if ai_provider.lower() == "openai":
@@ -704,7 +695,6 @@ def answer_questions(modal: WebElement, questions_list: set, work_location: str,
                     actions.send_keys(Keys.ARROW_DOWN)
                     actions.send_keys(Keys.ENTER).perform()
             questions_list.add((label, text_area.get_attribute("value"), "textarea", prev_answer))
-            ##<
             continue
 
         # Check if it's a checkbox question
@@ -972,7 +962,6 @@ def apply_to_jobs(search_terms: list[str]) -> None:
 
                     
                     if use_AI and description != "Unknown":
-                        ##> ------ Yang Li : MARKYangL - Feature ------
                         try:
                             if ai_provider.lower() == "openai":
                                 skills = ai_extract_skills(aiClient, description)
@@ -986,7 +975,6 @@ def apply_to_jobs(search_terms: list[str]) -> None:
                         except Exception as e:
                             print_lg("Failed to extract skills:", e)
                             skills = "Error extracting skills"
-                        ##<
 
                     uploaded = False
                     # Case 1: Easy Apply Button
@@ -1122,7 +1110,7 @@ chatGPT_tab = False
 linkedIn_tab = False
 
 def main() -> None:
-    pyautogui.alert("Please consider sponsoring this project at:\n\nhttps://github.com/sponsors/GodsScion\n\n", "Support the project", "Okay")
+    pyautogui.alert("Please consider sponsoring this project.", "Support the project", "Okay")
     total_runs = 1
     try:
         global linkedIn_tab, tabs_count, useNewResume, aiClient
@@ -1154,13 +1142,11 @@ def main() -> None:
         if use_AI:
             if ai_provider == "openai":
                 aiClient = ai_create_openai_client()
-            ##> ------ Yang Li : MARKYangL - Feature ------
             # Create DeepSeek client
             elif ai_provider == "deepseek":
                 aiClient = deepseek_create_client()
             elif ai_provider == "gemini":
                 aiClient = gemini_create_client()
-            ##<
 
             try:
                 about_company_for_ai = " ".join([word for word in (first_name+" "+last_name).split() if len(word) > 3])
@@ -1203,10 +1189,10 @@ def main() -> None:
         print_lg("Irrelevant jobs skipped:        {}\n".format(skip_count))
         if randomly_answered_questions: print_lg("\n\nQuestions randomly answered:\n  {}  \n\n".format(";\n".join(str(question) for question in randomly_answered_questions)))
         quotes = choice([
-            "Never quit. You're one step closer than before. - Sai Vignesh Golla", 
-            "All the best with your future interviews, you've got this. - Sai Vignesh Golla", 
-            "Keep up with the progress. You got this. - Sai Vignesh Golla", 
-            "If you're tired, learn to take rest but never give up. - Sai Vignesh Golla",
+            "Never quit. You're one step closer than before.",
+            "All the best with your future interviews, you've got this.",
+            "Keep up with the progress. You got this.",
+            "If you're tired, learn to take rest but never give up.",
             "Success is not final, failure is not fatal, It is the courage to continue that counts. - Winston Churchill (Not a sponsor)",
             "Believe in yourself and all that you are. Know that there is something inside you that is greater than any obstacle. - Christian D. Larson (Not a sponsor)",
             "Every job is a self-portrait of the person who does it. Autograph your work with excellence. - Jessica Guidobono (Not a sponsor)",
@@ -1222,14 +1208,13 @@ def main() -> None:
         if timeSaved > 0:
             timeSaved += 60
             timeSavedMsg = f"In this run, you saved approx {round(timeSaved/60)} mins ({timeSaved} secs), please consider supporting the project."
-        msg = f"{quotes}\n\n\n{timeSavedMsg}\nYou can also get your quote and name shown here, or prioritize your bug reports by supporting the project at:\n\nhttps://github.com/sponsors/GodsScion\n\n\nSummary:\n{summary}\n\n\nBest regards,\nSai Vignesh Golla\nhttps://www.linkedin.com/in/saivigneshgolla/\n\nTop Sponsors:\n{sponsors}"
+        msg = f"{quotes}\n\n\n{timeSavedMsg}\nYou can also get your quote and name shown here, or prioritize your bug reports by supporting the project.\n\n\nSummary:\n{summary}\n\n\nBest regards,\n\nTop Sponsors:\n{sponsors}"
         pyautogui.alert(msg, "Exiting..")
         print_lg(msg,"Closing the browser...")
         if tabs_count >= 10:
             msg = "NOTE: IF YOU HAVE MORE THAN 10 TABS OPENED, PLEASE CLOSE OR BOOKMARK THEM!\n\nOr it's highly likely that application will just open browser and not do anything next time!" 
             pyautogui.alert(msg,"Info")
             print_lg("\n"+msg)
-        ##> ------ Yang Li : MARKYangL - Feature ------
         if use_AI and aiClient:
             try:
                 if ai_provider.lower() == "openai":
@@ -1241,7 +1226,6 @@ def main() -> None:
                 print_lg(f"Closed {ai_provider} AI client.")
             except Exception as e:
                 print_lg("Failed to close AI client:", e)
-        ##<
         try:
             if driver:
                 driver.quit()

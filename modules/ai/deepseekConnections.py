@@ -1,4 +1,3 @@
-##> ------ Yang Li : MARKYangL - Feature ------
 from config.secrets import *
 from config.settings import showAiErrorAlerts
 from modules.helpers import print_lg, critical_error_log, convert_to_json
@@ -20,7 +19,6 @@ def deepseek_create_client() -> OpenAI | None:
         if not use_AI:
             raise ValueError("AI is not enabled! Please enable it by setting `use_AI = True` in `secrets.py` in `config` folder.")
         
-        ##> ------ Tim L : tulxoro - Refactor ------
         base_url = llm_api_url
         
 
@@ -35,7 +33,6 @@ def deepseek_create_client() -> OpenAI | None:
         print_lg(f"Using Model: {llm_model}")
         print_lg("Check './config/secrets.py' for more details.\n")
         print_lg("---------------------------------------------")
-        ##<
         return client
     except Exception as e:
         error_message = f"Error occurred while creating DeepSeek client. Make sure your API connection details are correct."
@@ -65,9 +62,8 @@ def deepseek_completion(client: OpenAI, messages: list[dict], response_format: d
     * Takes in `stream` of type `bool` for streaming output (optional)
     * Returns the response as text or JSON
     '''
-    if not client: 
+    if not client:
         raise ValueError("DeepSeek client is not available!")
-    ##> ------ Tim L : tulxoro - Improvement ------
     # Set up parameters for the API call
     params = {
         
@@ -92,7 +88,6 @@ def deepseek_completion(client: OpenAI, messages: list[dict], response_format: d
         print_lg(f"Using model: {llm_model}")
         print_lg(f"Message count: {len(messages)}")
         completion = client.chat.completions.create(**params)
-    ##<
         result = ""
         
         # Process the response
@@ -233,4 +228,3 @@ def deepseek_answer_question(
     except Exception as e:
         critical_error_log("Error occurred while answering question with DeepSeek!", e)
         return {"error": str(e)}
-##< 
