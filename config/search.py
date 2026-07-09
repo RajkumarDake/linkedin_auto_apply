@@ -1,7 +1,7 @@
 
 # These Sentences are Searched in LinkedIn
 # Enter your search terms inside '[ ]' with quotes ' "searching title" ' for each search followed by comma ', ' Eg: ["Software Engineer", "Software Developer", "Selenium Developer"]
-search_terms = ["Software Engineer", "Software Developer", "AI Engineer", "Backend Engineer",  "Full Stack Developer", "Gen Ai Engineer"]
+search_terms = ["Software Engineer"]
 # Search location, this will be filled in "City, state, or zip code" search box. If left empty as "", tool will not fill it.
 search_location = "India"               # Preferred: Bangalore, Hyderabad, and other locations in India
 
@@ -18,9 +18,9 @@ salary = ""                        # "$40,000+", "$60,000+", "$80,000+", "$100,0
 
 easy_apply_only = True             # True or False, Note: True or False are case-sensitive
 
-experience_level = ["Entry level", "Associate", "Mid-Senior level"]   # Matching your 1+ year experience
-job_type = ["Full-time"]           # Full-time roles only
-on_site = ["On-site", "Remote", "Hybrid"]   # Open to Bangalore, Hyderabad, and remote
+experience_level = []              # No filter - only Software Engineer + India + Past 24 hours are used
+job_type = []                      # No filter
+on_site = []                       # No filter
 
 companies = []                     # (dynamic multiple select) make sure the name you type in list exactly matches with the company name you're looking for, including capitals. 
                                    # Eg: "7-eleven", "Google","X, the moonshot factory","YouTube","CapitalG","Adometry (acquired by Google)","Meta","Apple","Byte Dance","Netflix", "Snowflake","Mineral.ai","Microsoft","JP Morgan","Barclays","Visa","American Express", "Snap Inc", "JPMorgan Chase & Co.", "Tata Consultancy Services", "Recruiting from Scratch", "Epic", and so on...
